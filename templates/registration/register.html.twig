@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Inscription
+{% endblock %}
+
+{% block body %}
+    <div class="card shadow mt-5 mx-auto" style="max-width: 400px; background-color: #f8f9fa; border: 1px solid #d3d3d3;">
+        <div class="card-body">
+            <h1 class="h3 mb-3 font-weight-normal bg-secondary text-white p-2 rounded">
+                Inscription
+            </h1>
+
+            {{ form_errors(registrationForm) }}
+
+            {{ form_start(registrationForm) }}
+            <div class="mb-3">
+                {{ form_row(registrationForm.email, {
+                        'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'Email',
+                            'autocomplete': 'email'
+                        }
+                    }) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(registrationForm.plainPassword, {
+                        'label': 'Mot de passe',
+                        'attr': {
+                            'class': 'form-control',
+                            'autocomplete': 'new-password'
+                        }
+                    }) }}
+            </div>
+            <div class="custom-form-check mb-3">
+                {{ form_row(registrationForm.agreeTerms, {
+                    'label_attr': {
+                        'class': 'custom-label'
+                    },
+                    'attr': {
+                        'class': 'custom-form-control'
+                    }
+                }) }}
+                <label class="custom-label" for="{{ registrationForm.agreeTerms.vars.id }}">
+                    En cliquant sur "S'inscrire", vous acceptez nos <a href="#" class="custom-link">Conditions générales</a> et <a href="#" class="custom-link">Politique de confidentialité</a>.
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-lg btn-secondary btn-block">
+                S'inscrire
+            </button>
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+{% endblock %}
+

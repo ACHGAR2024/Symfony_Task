@@ -1,0 +1,237 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container" >
+        
+        <div id="notification" class="alert d-none" role="alert"></div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="board-canvas">
+                    <button class="btn btn-secondary btn-lg fw-bold">A faire</button>
+                    <ul class="list-group" id="todo-list" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
+                        {% for task in tasksTodo %}
+                            <li class="list-group-item m-2 shadow p-3  rounded" draggable="true" ondragstart="drag(event)" id="task-{{ task.id }}">
+                        <h4 class="editable mt-2 bold" data-type="title" data-id="{{ task.id }}">{{ task.title }}</h4>
+                    <p class="editable" data-type="description" data-id="{{ task.id }}">{{ task.description }}</p>
+                    
+                <p class="editable" data-type="date" data-id="{{ task.id }}">{{ task.dueDate | date('d/m/Y H:i') }}</p>
+                <select class="status-select" data-id="{{ task.id }}">
+                            <option value="new" {% if task.status == 'new' %}selected{% endif %}>À faire</option>
+                            <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>En cours</option>
+                            <option value="done" {% if task.status == 'done' %}selected{% endif %}>Terminées</option>
+                        </select>
+                 </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="board-canvas">
+                    <button class="btn btn-secondary btn-lg">En cours</button>
+                    <ul class="list-group" id="in-progress-list" ondrop="drop(event, 'in_progress')" ondragover="allowDrop(event)">
+                        {% for task in tasksInProgress %}
+                            <li class="list-group-item m-2 shadow p-3   rounded" draggable="true" ondragstart="drag(event)" id="task-{{ task.id }}">
+                        <h4 class="editable mt-2 bold" data-type="title" data-id="{{ task.id }}">{{ task.title }}</h4>
+                    <p class="editable" data-type="description" data-id="{{ task.id }}">{{ task.description }}</p>
+                    <p class="editable" data-type="date" data-id="{{ task.id }}">{{ task.dueDate | date('d/m/Y H:i') }}</p>
+                    <select class="status-select" data-id="{{ task.id }}">
+                <option value="new" {% if task.status == 'new' %}selected{% endif %}>À faire</option>
+                <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>En cours</option>
+                <option value="done" {% if task.status == 'done' %}selected{% endif %}>Terminées</option>
+            </select>
+                
+                </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="board-canvas">
+                    <button class="btn btn-secondary btn-lg">Terminées</button>
+                    <ul class="list-group" id="done-list" ondrop="drop(event, 'done')" ondragover="allowDrop(event)">
+                        {% for task in tasksDone %}
+                            <li class="list-group-item m-2 shadow p-3   rounded" draggable="true" ondragstart="drag(event)" id="task-{{ task.id }}" >
+                                <h4 class="editable mt-2 bold" data-type="title" data-id="{{ task.id }}">{{ task.title }}</h4>
+                                <p class="editable" data-type="description" data-id="{{ task.id }}">{{ task.description }}</p>
+                                <p class="editable" data-type="date" data-id="{{ task.id }}">{{ task.dueDate | date('d/m/Y H:i') }}</p>
+                                <select class="status-select" data-id="{{ task.id }}">
+                            <option value="new" {% if task.status == 'new' %}selected{% endif %}>À faire</option>
+                            <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>En cours</option>
+                            <option value="done" {% if task.status == 'done' %}selected{% endif %}>Terminées</option>
+                        </select>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+// Code pour la couleur aleatoire
+        function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+function isColorDark(color) {
+    const r = parseInt(color.substr(1, 2), 16);
+    const g = parseInt(color.substr(3, 2), 16);
+    const b = parseInt(color.substr(5, 2), 16);
+    // Calculer la luminosité
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness < 128;
+}
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('li').forEach(element => {
+        const randomColor = getRandomColor();
+        element.style.backgroundColor = randomColor;
+        element.style.color = isColorDark(randomColor) ? 'white' : 'black';
+    });
+});
+
+/////////////////////////////////////////////////////////////////
+
+
+document.addEventListener('DOMContentLoaded', () => {
+            const notification = document.getElementById('notification');
+
+            function showNotification(message, type) {
+                notification.textContent = message;
+                notification.className = `alert alert-${type}`;
+                notification.classList.remove('d-none');
+                setTimeout(() => {
+                    notification.classList.add('d-none');
+                }, 3000);
+            }
+
+            document.querySelectorAll('.status-select').forEach(element => {
+                element.addEventListener('change', function() {
+                    const taskId = this.dataset.id;
+                    const newStatus = this.value;
+                    const url = `/task/update-status/${taskId}/${newStatus}`;
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token('task_update') }}'
+                        }
+                    })
+                    .then(response => response.ok ? response.json() : Promise.reject(response.statusText))
+                    .then(data => {
+                        showNotification(data.message, 'success');
+                        location.reload(); // Reload page to reflect changes
+                    })
+                    .catch(error => {
+                        showNotification('Erreur lors de la mise à jour du statut : ' + error, 'danger');
+                    });
+                });
+            });
+
+            function drag(event) {
+                event.dataTransfer.setData("task_id", event.target.id);
+            }
+
+            function allowDrop(event) {
+                event.preventDefault();
+            }
+
+            function drop(event, targetStatus) {
+                event.preventDefault();
+                const task_id = event.dataTransfer.getData("task_id");
+                const taskElement = document.getElementById(task_id);
+
+                const fieldType = 'status';
+                const taskId = task_id.split('-')[1];
+                const url = `/task/update-status/${taskId}/${targetStatus}`;
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token('task_update') }}'
+                    },
+                    body: JSON.stringify({ [fieldType]: targetStatus })
+                })
+                .then(response => response.ok ? response.json() : Promise.reject(response.statusText))
+                .then(data => {
+                    showNotification(data.message, 'success');
+                    location.reload(); // Reload page to reflect changes
+                })
+                .catch(error => {
+                    showNotification('Erreur lors du déplacement de la tâche : ' + error, 'danger');
+                });
+            }
+
+            document.querySelectorAll('.editable').forEach(element => {
+        element.addEventListener('dblclick', function() {
+            const oldValue = this.textContent;
+            const input = document.createElement('input');
+            input.type = this.dataset.type === 'date' ? 'datetime-local' : 'text';
+            input.value = this.dataset.type === 'date' ? oldValue.replace(' ', 'T') : oldValue;
+            input.classList.add('form-control');
+
+            this.textContent = '';
+            this.appendChild(input);
+
+            input.focus();
+
+            input.addEventListener('blur', () => {
+                const newValue = input.value;
+
+                if (newValue && newValue !== oldValue) {
+                    const taskId = this.dataset.id;
+                    const fieldType = this.dataset.type;
+                    let url;
+
+                    if (fieldType === 'title') {
+                        url = `/task/update-title/${taskId}`;
+                    } else if (fieldType === 'description') {
+                        url = `/task/update-description/${taskId}`;
+                    } else if (fieldType === 'date') {
+                        url = `/task/update-date/${taskId}`;
+                        // Pas besoin de modifier newValue, car il est déjà au format attendu
+                    }
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token('task_update') }}'
+                        },
+                        body: JSON.stringify({ [fieldType]: newValue })
+                    })
+                    .then(response => response.ok ? response.text() : Promise.reject(response.statusText))
+                    .then(message => {
+                        this.textContent = fieldType === 'date' ? newValue.replace('T', ' ') : newValue;
+                        showNotification(message, 'success');
+                        location.reload(); // Recharger la page pour refléter les changements
+                    })
+                    .catch(error => {
+                        this.textContent = oldValue;
+                        showNotification('Erreur lors de la mise à jour : ' + error, 'danger');
+                    });
+                } else {
+                    this.textContent = oldValue;
+                }
+            });
+
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    input.blur();
+                }
+            });
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1>{% if form.vars.value.id %}Modifier{% else %}Créer{% endif %} une Tâche</h1>
+
+        <div class="row">
+            <div class="col-md-6">
+                {% if form.vars.value.id %}
+                    {{ form_start(form, {'attr': {'class': 'form'}}) }}
+                {% else %}
+                    {{ form_start(form) }}
+                {% endif %}
+                    {{ form_row(form.title, {'label': 'Titre', 'attr': {'class': 'form-control'}}) }}
+                    {{ form_row(form.description, {'label': 'Description', 'attr': {'class': 'form-control'}}) }}
+                    {{ form_row(form.dueDate, {'label': 'Date d\'échéance', 'widget': 'single_text', 'attr': {'class': 'form-control'}}) }}
+                    {{ form_row(form.status, {'label': 'Statut', 'attr': {'class': 'form-control'}}) }}
+                    <button type="submit" class="btn btn-primary mt-3">{{ form.vars.value.id ? 'Modifier' : 'Créer' }}</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        <a href="{{ path('app_task_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+{% endblock %}

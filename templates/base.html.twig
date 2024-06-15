@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  
+           <style>
+            .custom-form-check {
+                margin-bottom: 15px;
+                /* Add any other styling as needed */
+            }
+            
+            .custom-label {
+                display: block;
+                margin-top: 5px;
+                /* Add any other styling as needed */
+            }
+            
+            .custom-form-control {
+                /* Styles for the form control (checkbox or radio button) */
+            }
+            
+            .custom-link {
+                color: #337ab7; /* Example color for links */
+                text-decoration: none;
+                /* Add any other styling as needed */
+            }
+            .navbar {
+    margin-bottom: 20px;
+}
+
+.btn-search-icon {
+    width: 16px;
+    height: 16px;
+}
+
+@media (max-width: 767px) {
+    .navbar-nav {
+        text-align: center;
+    }
+    .navbar-nav .nav-item {
+        margin-bottom: 10px;
+    }
+    .navbar-nav .btn {
+        width: 100%;
+    }
+}
+#random-li {
+  /* couleur d'arrière-plan aléatoire */
+  background-color: rgb(random(0, 255), random(0, 255), random(0, 255));
+
+  /* couleur de texte basée sur la luminosité relative de la couleur d'arrière-plan */
+  color: rgb(
+    var(--red),
+    var(--green),
+    var(--blue)
+  ) var(--luminosity) <= 128 ? #fff : #000;
+
+  /* variables pour les valeurs RVB de la couleur d'arrière-plan */
+  --red: calc(0.299 * var(--r));
+  --green: calc(0.587 * var(--g));
+  --blue: calc(0.114 * var(--b));
+
+  /* variables pour la luminosité relative et les valeurs RVB de la couleur d'arrière-plan */
+  --luminosity: calc(var(--red) + var(--green) + var(--blue));
+  --r: var(--background-color-r);
+  --g: var(--background-color-g);
+  --b: var(--background-color-b);
+}
+
+
+
+            </style>
+       
+        {% endblock %}
+
+        {% block javascripts %}
+            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-LtrjvnR4Twt/qOuWxCfR3k1qBaG78gRYlCJ2MXaX2Ck4ozkVZAIE5zXF1JjzM" crossorigin="anonymous"></script>
+      
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+        {% endblock %}
+    </head>
+
+   <body>
+       
+    
+
+    
+    
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="http://127.0.0.1:8000/">
+        <img src="https://img.icons8.com/?size=42&id=xFMXTJymgNYP&format=png&color=000000" alt="Brand">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <linav class="nav-item active">
+                <a class="nav-link" href="http://127.0.0.1:8000/">Accueil <span class="sr-only">(current)</span></a>
+            </linav>
+            <linav class="nav-item">
+                    <a class="nav-link" href="{{ path('app_task_index') }}">Gegstion des tâches</a>
+                </linav>
+                
+            
+            <linav class="nav-item">
+                <a class="nav-link" href="#">A propos</a>
+            </linav>
+            <linav class="nav-item">
+                <a class="nav-link" href="#">Contact</a>
+            </linav>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            {% if app.user is not null %}
+                <a href="{{ path('app_logout') }}" class="btn btn-danger btn-sm m-1">
+                    Déconnexion
+                </a>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="btn btn-outline-success btn-sm m-1">
+                    Se connecter
+                </a>
+                <a href="{{ path('app_register') }}" class="btn btn-outline-secondary btn-sm m-1">
+                    S'inscrire
+                </a>
+            {% endif %}
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <div class="input-group">
+                <input class="form-control me-2" type="search" placeholder="Rechercher..." aria-label="Rechercher...">
+                <button class="btn btn-secondary btn-sm" type="submit">
+                    <img data-v-67946b6c="" class="btn-search-icon" src="https://maxst.icons8.com/vue-static/icon/svg/searchWhite.svg" alt="magnifier">
+                </button>
+            </div>
+        </form>
+    </div>
+</nav>
+
+    <main class="container">
+        {% block body %}{% endblock %}
+    </main>
+        <footer class="">
+            <div class="">
+                <div class="row">
+                    <div class="pt-3">
+                        <p>© 2024 Symfony - Tous droits réservés</p>
+                    </div>
+                    <div class="">
+                       
+                    </div>
+                    
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>
